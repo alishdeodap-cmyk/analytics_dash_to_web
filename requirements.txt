@@ -3,4 +3,3 @@ mysql-connector-python
 python-dotenv
 werkzeug
 gunicorn
-getpass
