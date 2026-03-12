@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meesho Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0a0a0f;
+            --surface: #13131a;
+            --border: #1e1e2e;
+            --accent: #ff5f1f;
+            --text: #f0f0f5;
+            --muted: #6b6b80;
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 58px;
+            display: flex;
+            align-items: center;
+            Failed to load resource: the server responded with a status of 500 ()ify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            font-family: 'Syne', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .brand span { color: var(--accent); }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-badge {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .user-badge strong {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .btn-logout {
+            padding: 7px 16px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--muted);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .btn-logout:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .dashboard-container {
+            height: calc(100vh - 58px);
+            width: 100%;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="brand">Meesho <span>Dashboard</span></div>
+        <div class="header-right">
+            <div class="user-badge">Signed in as <strong>{{ username }}</strong></div>
+            <a href="/logout" class="btn-logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <iframe
+            title="MEESHO__NEWWW"
+            src="https://app.powerbi.com/view?r=eyJrIjoiM2EyY2ZlYzEtYjI3YS00N2ZhLWE0MzgtZjM4ZDdmMzViY2FlIiwidCI6IjY1YmUwNDg3LWEzZGMtNDg3Ni04NzUxLWM5NDFlMTUxMjk4MSJ9"
+            frameborder="0"
+            allowFullScreen="true">
+        </iframe>
+    </div>
+</body>
+</html>
