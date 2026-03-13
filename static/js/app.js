@@ -6,6 +6,12 @@ function setTheme(theme) {
     localStorage.setItem('ah-theme', theme);
     document.getElementById('themeDark').classList.toggle('active', theme === 'dark');
     document.getElementById('themeLight').classList.toggle('active', theme === 'light');
+    // Swap sidebar logo for correct theme
+    const logo = document.getElementById('sidebarLogo');
+    if (logo) {
+        const base = logo.src.replace(/logo(-light)?\.svg$/, '');
+        logo.src = base + (theme === 'light' ? 'logo-light.svg' : 'logo.svg');
+    }
 }
 // Apply saved theme immediately (default: dark)
 (function () {

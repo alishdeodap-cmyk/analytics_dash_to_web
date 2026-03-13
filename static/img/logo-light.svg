@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 64" fill="none">
+  <!-- Rising bar chart icon -->
+  <rect x="2"  y="42" width="11" height="18" rx="2.5" fill="#a07228" opacity="0.45"/>
+  <rect x="17" y="30" width="11" height="30" rx="2.5" fill="#a07228" opacity="0.70"/>
+  <rect x="32" y="14" width="11" height="46" rx="2.5" fill="#a07228"/>
+  <!-- Trend line -->
+  <polyline points="7,38 22,27 37,11" stroke="#a07228" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.35"/>
+
+  <!-- Wordmark: Deodap -->
+  <text x="56" y="36"
+        font-family="'Arial Black', 'Helvetica Neue', Arial, sans-serif"
+        font-size="26" font-weight="900"
+        fill="#28200e"
+        letter-spacing="-0.5">Deodap</text>
+
+  <!-- Wordmark: ANALYTICS -->
+  <text x="57" y="54"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="11.5" font-weight="700"
+        fill="#a07228"
+        letter-spacing="4.5">ANALYTICS</text>
+</svg>

@@ -14,13 +14,12 @@
     <!-- ── SIDEBAR ─────────────────────────────────────────── -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <div class="brand-logo">
-                <div class="brand-icon">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h7v7H3V3zm0 11h7v7H3v-7zm11-11h7v7h-7V3zm0 11h7v7h-7v-7z"/></svg>
-                </div>
-                Deodap <span>Analytics</span>
-            </div>
-            <div class="brand-sub">{% if current_user.is_admin %}Admin Panel{% else %}Analytics Portal{% endif %}</div>
+            <!-- src is swapped by setTheme() in app.js on load -->
+            <img id="sidebarLogo"
+                 src="{{ url_for('static', filename='img/logo-light.svg') }}"
+                 alt="Deodap Analytics"
+                 style="height:48px;width:auto;max-width:190px;display:block;">
+            <div class="brand-sub" style="margin-top:6px;">{% if current_user.is_admin %}Admin Panel{% else %}Analytics Portal{% endif %}</div>
         </div>
 
         <nav class="sidebar-nav">
