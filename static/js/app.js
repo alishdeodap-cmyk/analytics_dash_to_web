@@ -1,5 +1,18 @@
 /* Analytics Hub — Main JS */
 
+// ── Theme switcher ───────────────────────────────────────────
+function setTheme(theme) {
+    document.body.classList.toggle('light', theme === 'light');
+    localStorage.setItem('ah-theme', theme);
+    document.getElementById('themeDark').classList.toggle('active', theme === 'dark');
+    document.getElementById('themeLight').classList.toggle('active', theme === 'light');
+}
+// Apply saved theme immediately (default: dark)
+(function () {
+    const saved = localStorage.getItem('ah-theme') || 'dark';
+    setTheme(saved);
+})();
+
 // ── Sidebar toggle (mobile) ──────────────────────────────────
 const sidebar = document.getElementById('sidebar');
 const toggle  = document.getElementById('sidebarToggle');
