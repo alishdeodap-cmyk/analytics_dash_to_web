@@ -53,6 +53,17 @@
                       required>{{ dashboard.iframe_raw if is_edit else '' }}</textarea>
             <span class="form-text">The src and title will be extracted automatically. Only powerbi.com URLs are accepted.</span>
         </div>
+
+        <div class="form-group" style="margin-top:16px;">
+            <label class="form-label">Default Filter <span style="font-weight:400;text-transform:none;color:var(--muted);">(optional)</span></label>
+            <input type="text" name="embed_filter" class="form-control"
+                   value="{{ dashboard.embed_filter if is_edit and dashboard.embed_filter else '' }}"
+                   placeholder="e.g. Table/Column eq 'Value'">
+            <span class="form-text">
+                Power BI URL filter applied when this dashboard opens. Format: <code style="color:var(--gold);font-size:11px;">TableName/ColumnName eq 'Value'</code><br>
+                Example: <code style="color:var(--gold);font-size:11px;">Sales/Region eq 'North'</code> &nbsp;|&nbsp; Multiple: <code style="color:var(--gold);font-size:11px;">Sales/Region eq 'North' and Sales/Year eq 2024</code>
+            </span>
+        </div>
     </div>
 
     <div class="card" style="margin-bottom:24px;">

@@ -67,10 +67,11 @@ def dashboard_new():
     error = None
 
     if request.method == 'POST':
-        name        = request.form.get('name', '').strip()
-        description = request.form.get('description', '').strip()
-        iframe_raw  = request.form.get('iframe_raw', '').strip()
-        user_ids    = request.form.getlist('user_ids')
+        name         = request.form.get('name', '').strip()
+        description  = request.form.get('description', '').strip()
+        iframe_raw   = request.form.get('iframe_raw', '').strip()
+        embed_filter = request.form.get('embed_filter', '').strip()
+        user_ids     = request.form.getlist('user_ids')
 
         if not name or not iframe_raw:
             error = 'Dashboard name and iframe code are required.'
@@ -82,12 +83,13 @@ def dashboard_new():
                 error = 'Only Power BI embed URLs (https://app.powerbi.com/) are allowed.'
             else:
                 dash = Dashboard(
-                    name        = name,
-                    description = description,
-                    embed_src   = parsed['src'],
-                    embed_title = parsed['title'] or name,
-                    iframe_raw  = iframe_raw,
-                    created_by  = current_user.id,
+                    name         = name,
+                    description  = description,
+                    embed_src    = parsed['src'],
+                    embed_title  = parsed['title'] or name,
+                    iframe_raw   = iframe_raw,
+                    embed_filter = embed_filter or None,
+                    created_by   = current_user.id,
                 )
                 for uid in user_ids:
                     user = User.query.get(int(uid))
@@ -113,10 +115,11 @@ def dashboard_edit(dashboard_id):
     error = None
 
     if request.method == 'POST':
-        name        = request.form.get('name', '').strip()
-        description = request.form.get('description', '').strip()
-        iframe_raw  = request.form.get('iframe_raw', '').strip()
-        user_ids    = request.form.getlist('user_ids')
+        name         = request.form.get('name', '').strip()
+        description  = request.form.get('description', '').strip()
+        iframe_raw   = request.form.get('iframe_raw', '').strip()
+        embed_filter = request.form.get('embed_filter', '').strip()
+        user_ids     = request.form.getlist('user_ids')
 
         if not name or not iframe_raw:
             error = 'Dashboard name and iframe code are required.'
@@ -132,6 +135,7 @@ def dashboard_edit(dashboard_id):
                 dashboard.embed_src     = parsed['src']
                 dashboard.embed_title   = parsed['title'] or name
                 dashboard.iframe_raw    = iframe_raw
+                dashboard.embed_filter  = embed_filter or None
                 dashboard.allowed_users = []
                 for uid in user_ids:
                     user = User.query.get(int(uid))

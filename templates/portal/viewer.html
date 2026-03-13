@@ -30,9 +30,14 @@
     </div>
 
     <!-- Full-screen iframe -->
+    {% set embed_url = dashboard.embed_src %}
+    {% if dashboard.embed_filter %}
+        {% set sep = '&' if '?' in embed_url else '?' %}
+        {% set embed_url = embed_url + sep + 'filter=' + dashboard.embed_filter | urlencode %}
+    {% endif %}
     <iframe
         class="viewer-iframe"
-        src="{{ dashboard.embed_src }}"
+        src="{{ embed_url }}"
         title="{{ dashboard.embed_title or dashboard.name }}"
         frameborder="0"
         allowfullscreen

@@ -111,13 +111,14 @@ class Department(db.Model):
 class Dashboard(db.Model):
     __tablename__ = 'dashboards'
 
-    id          = db.Column(db.Integer, primary_key=True)
-    name        = db.Column(db.String(150), nullable=False)
-    description = db.Column(db.Text)
-    embed_src   = db.Column(db.Text, nullable=False)
-    embed_title = db.Column(db.String(200))
-    iframe_raw  = db.Column(db.Text)
-    is_active   = db.Column(db.Boolean, default=True, nullable=False)
+    id           = db.Column(db.Integer, primary_key=True)
+    name         = db.Column(db.String(150), nullable=False)
+    description  = db.Column(db.Text)
+    embed_src    = db.Column(db.Text, nullable=False)
+    embed_title  = db.Column(db.String(200))
+    iframe_raw   = db.Column(db.Text)
+    embed_filter = db.Column(db.Text)   # optional Power BI URL filter string
+    is_active    = db.Column(db.Boolean, default=True, nullable=False)
     created_by  = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='SET NULL'))
     created_at  = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at  = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
