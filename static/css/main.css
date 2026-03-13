@@ -27,9 +27,9 @@
     --gold-shadow: 0 4px 20px rgba(124,106,245,0.3);
 
     /* ── Text ── */
-    --text:      #eeeef8;
-    --text2:     #c0c0d8;
-    --muted:     #8888aa;
+    --text:      #f0f0fc;
+    --text2:     #d8d8f0;
+    --muted:     #b0b0cc;
 
     /* ── Status ── */
     --success:   #2dd98e;
@@ -79,9 +79,9 @@ body.light {
     --gold-glow: rgba(98,85,212,0.18);
     --gold-shadow: 0 4px 20px rgba(98,85,212,0.2);
 
-    --text:      #1a1630;
-    --text2:     #2e2850;
-    --muted:     #6b6490;
+    --text:      #0f0c24;
+    --text2:     #1e1840;
+    --muted:     #3d3560;
 
     --success:   #1e8a58;
     --danger:    #d93030;
