@@ -63,13 +63,14 @@ def dashboards():
 @admin_required
 def dashboard_new():
     departments = Department.query.filter_by(is_active=True).order_by(Department.name).all()
+    all_users   = User.query.filter_by(is_active=True, role='user').order_by(User.username).all()
     error = None
 
     if request.method == 'POST':
         name        = request.form.get('name', '').strip()
         description = request.form.get('description', '').strip()
         iframe_raw  = request.form.get('iframe_raw', '').strip()
-        dept_ids    = request.form.getlist('department_ids')
+        user_ids    = request.form.getlist('user_ids')
 
         if not name or not iframe_raw:
             error = 'Dashboard name and iframe code are required.'
@@ -88,17 +89,18 @@ def dashboard_new():
                     iframe_raw  = iframe_raw,
                     created_by  = current_user.id,
                 )
-                for dept_id in dept_ids:
-                    dept = Department.query.get(int(dept_id))
-                    if dept:
-                        dash.departments.append(dept)
+                for uid in user_ids:
+                    user = User.query.get(int(uid))
+                    if user:
+                        dash.allowed_users.append(user)
                 db.session.add(dash)
                 db.session.commit()
                 flash(f"Dashboard '{name}' added successfully.", 'success')
                 return redirect(url_for('admin.dashboards'))
 
     return render_template('admin/dashboard_form.html',
-                           departments=departments, error=error, dashboard=None)
+                           departments=departments, all_users=all_users,
+                           error=error, dashboard=None)
 
 
 @admin.route('/dashboards/<int:dashboard_id>/edit', methods=['GET', 'POST'])
@@ -107,13 +109,14 @@ def dashboard_new():
 def dashboard_edit(dashboard_id):
     dashboard   = Dashboard.query.get_or_404(dashboard_id)
     departments = Department.query.filter_by(is_active=True).order_by(Department.name).all()
+    all_users   = User.query.filter_by(is_active=True, role='user').order_by(User.username).all()
     error = None
 
     if request.method == 'POST':
         name        = request.form.get('name', '').strip()
         description = request.form.get('description', '').strip()
         iframe_raw  = request.form.get('iframe_raw', '').strip()
-        dept_ids    = request.form.getlist('department_ids')
+        user_ids    = request.form.getlist('user_ids')
 
         if not name or not iframe_raw:
             error = 'Dashboard name and iframe code are required.'
@@ -124,22 +127,23 @@ def dashboard_edit(dashboard_id):
             elif not parsed['src'].startswith('https://app.powerbi.com/'):
                 error = 'Only Power BI embed URLs are allowed.'
             else:
-                dashboard.name        = name
-                dashboard.description = description
-                dashboard.embed_src   = parsed['src']
-                dashboard.embed_title = parsed['title'] or name
-                dashboard.iframe_raw  = iframe_raw
-                dashboard.departments = []
-                for dept_id in dept_ids:
-                    dept = Department.query.get(int(dept_id))
-                    if dept:
-                        dashboard.departments.append(dept)
+                dashboard.name          = name
+                dashboard.description   = description
+                dashboard.embed_src     = parsed['src']
+                dashboard.embed_title   = parsed['title'] or name
+                dashboard.iframe_raw    = iframe_raw
+                dashboard.allowed_users = []
+                for uid in user_ids:
+                    user = User.query.get(int(uid))
+                    if user:
+                        dashboard.allowed_users.append(user)
                 db.session.commit()
                 flash(f"Dashboard '{name}' updated.", 'success')
                 return redirect(url_for('admin.dashboards'))
 
     return render_template('admin/dashboard_form.html',
-                           departments=departments, error=error, dashboard=dashboard)
+                           departments=departments, all_users=all_users,
+                           error=error, dashboard=dashboard)
 
 
 @admin.route('/dashboards/<int:dashboard_id>/toggle', methods=['POST'])

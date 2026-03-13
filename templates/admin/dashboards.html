@@ -28,7 +28,7 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Departments</th>
+                <th>Assigned Users</th>
                 <th>Status</th>
                 <th>Created</th>
                 <th>Actions</th>
@@ -44,13 +44,12 @@
                     {% endif %}
                 </td>
                 <td>
-                    <div style="display:flex;gap:5px;flex-wrap:wrap;">
-                        {% for dept in dash.departments %}
-                        <span class="tag" style="font-size:11px;">{{ dept.name }}</span>
-                        {% else %}
-                        <span style="color:var(--muted);font-size:12px;">No departments</span>
-                        {% endfor %}
-                    </div>
+                    {% set ucount = dash.allowed_users | length %}
+                    {% if ucount > 0 %}
+                    <span class="badge badge-accent">{{ ucount }} user{{ 's' if ucount != 1 else '' }}</span>
+                    {% else %}
+                    <span style="color:var(--muted);font-size:12px;">No users assigned</span>
+                    {% endif %}
                 </td>
                 <td>
                     <span class="badge {% if dash.is_active %}badge-success{% else %}badge-danger{% endif %}">

@@ -17,6 +17,13 @@ department_dashboards = db.Table(
     db.Column('department_id', db.Integer, db.ForeignKey('departments.id', ondelete='CASCADE'), primary_key=True),
 )
 
+# Dashboard → specific users (direct per-user assignment)
+user_dashboards = db.Table(
+    'user_dashboards',
+    db.Column('user_id',      db.Integer, db.ForeignKey('users.id',      ondelete='CASCADE'), primary_key=True),
+    db.Column('dashboard_id', db.Integer, db.ForeignKey('dashboards.id', ondelete='CASCADE'), primary_key=True),
+)
+
 
 # ── Models ────────────────────────────────────────────────────────────────────
 
@@ -34,8 +41,9 @@ class User(UserMixin, db.Model):
     created_at      = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at      = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    departments     = db.relationship('Department', secondary=user_departments, back_populates='users', lazy='select')
-    dashboard_views = db.relationship('DashboardView', backref='user', lazy='dynamic', cascade='all, delete-orphan')
+    departments      = db.relationship('Department', secondary=user_departments, back_populates='users', lazy='select')
+    allowed_dashboards = db.relationship('Dashboard', secondary=user_dashboards, back_populates='allowed_users', lazy='select')
+    dashboard_views  = db.relationship('DashboardView', backref='user', lazy='dynamic', cascade='all, delete-orphan')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -48,20 +56,16 @@ class User(UserMixin, db.Model):
         return self.role == 'admin'
 
     def get_accessible_dashboards(self):
-        """Return all active dashboards this user can view."""
+        """Return all active dashboards this user is directly assigned to."""
         if self.is_admin:
             return Dashboard.query.filter_by(is_active=True).all()
-        dept_ids = [d.id for d in self.departments]
-        if not dept_ids:
-            return []
         return (
             Dashboard.query
-            .join(department_dashboards, Dashboard.id == department_dashboards.c.dashboard_id)
+            .join(user_dashboards, Dashboard.id == user_dashboards.c.dashboard_id)
             .filter(
-                department_dashboards.c.department_id.in_(dept_ids),
+                user_dashboards.c.user_id == self.id,
                 Dashboard.is_active == True
             )
-            .distinct()
             .all()
         )
 
@@ -101,9 +105,10 @@ class Dashboard(db.Model):
     created_at  = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at  = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    departments = db.relationship('Department', secondary=department_dashboards, back_populates='dashboards', lazy='select')
-    views       = db.relationship('DashboardView', backref='dashboard', lazy='dynamic', cascade='all, delete-orphan')
-    creator     = db.relationship('User', foreign_keys=[created_by])
+    departments   = db.relationship('Department', secondary=department_dashboards, back_populates='dashboards', lazy='select')
+    allowed_users = db.relationship('User', secondary=user_dashboards, back_populates='allowed_dashboards', lazy='select')
+    views         = db.relationship('DashboardView', backref='dashboard', lazy='dynamic', cascade='all, delete-orphan')
+    creator       = db.relationship('User', foreign_keys=[created_by])
 
 
 class DashboardView(db.Model):

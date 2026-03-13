@@ -7,7 +7,7 @@
 <div class="page-header">
     <div>
         <h1>{{ 'Edit Dashboard' if is_edit else 'Add New Dashboard' }}</h1>
-        <p>{{ 'Update dashboard details and permissions' if is_edit else 'Paste your Power BI embed code and configure access' }}</p>
+        <p>{{ 'Update dashboard details and user access' if is_edit else 'Paste your Power BI embed code and assign users' }}</p>
     </div>
     <a href="{{ url_for('admin.dashboards') }}" class="btn btn-secondary">
         ← Back to Dashboards
@@ -43,7 +43,7 @@
             <strong style="color:var(--text);">How to get the embed code from Power BI:</strong><br>
             Open your Power BI report → File → Embed report → Website or portal → Copy the &lt;iframe&gt; code and paste it below.<br><br>
             <strong style="color:var(--text);">Example:</strong><br>
-            <code style="font-size:11px;color:var(--accent);">&lt;iframe title="My Report" src="https://app.powerbi.com/view?r=..." frameborder="0" allowFullScreen="true"&gt;&lt;/iframe&gt;</code>
+            <code style="font-size:11px;color:var(--gold);">&lt;iframe title="My Report" src="https://app.powerbi.com/view?r=..." frameborder="0" allowFullScreen="true"&gt;&lt;/iframe&gt;</code>
         </div>
 
         <div class="form-group">
@@ -56,29 +56,82 @@
     </div>
 
     <div class="card" style="margin-bottom:24px;">
-        <div class="card-title">Department Access</div>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">
-            Select which departments can see this dashboard. Users in selected departments will have access.
-        </p>
-        {% if departments %}
-        <div class="checkbox-group">
+        <div class="card-title">
+            User Access
+            <span style="font-size:11px;font-weight:400;color:var(--muted);">Only selected users will see this dashboard</span>
+        </div>
+
+        {% if all_users %}
+        {# Group users by department for display #}
+        {% set assigned_ids = dashboard.allowed_users | map(attribute='id') | list if is_edit else [] %}
+
+        {# Users with no department #}
+        {% set no_dept_users = all_users | selectattr('departments', 'equalto', []) | list %}
+
+        {# Search/select all helpers #}
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <input type="text" id="userSearch" class="form-control"
+                   style="max-width:260px;padding:7px 12px;font-size:13px;"
+                   placeholder="Search users...">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="toggleAllUsers(true)">Select All</button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="toggleAllUsers(false)">Clear All</button>
+        </div>
+
+        <div class="checkbox-group" id="userList" style="max-height:320px;">
             {% for dept in departments %}
-            <label class="checkbox-item">
-                <input type="checkbox" name="department_ids" value="{{ dept.id }}"
-                    {% if is_edit and dept in dashboard.departments %}checked{% endif %}>
+            {% set dept_users = all_users | selectattr('departments') | list %}
+            {% set dept_members = [] %}
+            {% for u in all_users %}
+                {% if dept in u.departments %}
+                    {% set _ = dept_members.append(u) %}
+                {% endif %}
+            {% endfor %}
+            {% if dept_members %}
+            <div class="user-dept-header" style="grid-column:1/-1;padding:6px 10px 4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold);border-bottom:1px solid var(--border);margin-top:6px;">
+                {{ dept.name }}
+            </div>
+            {% for user in dept_members %}
+            <label class="checkbox-item user-item">
+                <input type="checkbox" name="user_ids" value="{{ user.id }}"
+                    {% if user.id in assigned_ids %}checked{% endif %}>
                 <span>
-                    {{ dept.name }}
-                    {% if dept.parent %}
-                    <span style="font-size:11px;color:var(--muted);"> ({{ dept.parent.name }})</span>
-                    {% endif %}
+                    {{ user.username }}
+                    {% if user.email %}<span style="font-size:11px;color:var(--muted);"> — {{ user.email }}</span>{% endif %}
                 </span>
             </label>
             {% endfor %}
+            {% endif %}
+            {% endfor %}
+
+            {# Users not in any department #}
+            {% set unassigned = [] %}
+            {% for u in all_users %}
+                {% if not u.departments %}
+                    {% set _ = unassigned.append(u) %}
+                {% endif %}
+            {% endfor %}
+            {% if unassigned %}
+            <div class="user-dept-header" style="grid-column:1/-1;padding:6px 10px 4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);border-bottom:1px solid var(--border);margin-top:6px;">
+                No Department
+            </div>
+            {% for user in unassigned %}
+            <label class="checkbox-item user-item">
+                <input type="checkbox" name="user_ids" value="{{ user.id }}"
+                    {% if user.id in assigned_ids %}checked{% endif %}>
+                <span>{{ user.username }}{% if user.email %} <span style="font-size:11px;color:var(--muted);">— {{ user.email }}</span>{% endif %}</span>
+            </label>
+            {% endfor %}
+            {% endif %}
         </div>
+
+        <div style="margin-top:10px;font-size:12px;color:var(--muted);">
+            <span id="selectedCount">0</span> user(s) selected
+        </div>
+
         {% else %}
         <div style="color:var(--muted);font-size:13px;padding:12px;background:var(--bg);border-radius:8px;">
-            No departments yet.
-            <a href="{{ url_for('admin.department_new') }}" style="color:var(--accent);">Create a department first →</a>
+            No users yet.
+            <a href="{{ url_for('admin.user_new') }}" style="color:var(--gold);">Create users first →</a>
         </div>
         {% endif %}
     </div>
@@ -90,4 +143,32 @@
         <a href="{{ url_for('admin.dashboards') }}" class="btn btn-secondary">Cancel</a>
     </div>
 </form>
+
+{% block extra_scripts %}
+<script>
+// Live search
+document.getElementById('userSearch').addEventListener('input', function () {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('.user-item').forEach(item => {
+        item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+});
+
+// Select / clear all
+function toggleAllUsers(check) {
+    document.querySelectorAll('#userList input[type=checkbox]').forEach(cb => cb.checked = check);
+    updateCount();
+}
+
+// Count
+function updateCount() {
+    const n = document.querySelectorAll('#userList input[type=checkbox]:checked').length;
+    document.getElementById('selectedCount').textContent = n;
+}
+document.querySelectorAll('#userList input[type=checkbox]').forEach(cb => {
+    cb.addEventListener('change', updateCount);
+});
+updateCount();
+</script>
+{% endblock %}
 {% endblock %}
