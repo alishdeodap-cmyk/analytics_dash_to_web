@@ -27,8 +27,8 @@
 
     /* ── Text ── */
     --text:      #e8e8f5;
-    --text2:     #b0b0cc;
-    --muted:     #52527a;
+    --text2:     #c0c0d8;
+    --muted:     #7878a0;
 
     /* ── Status ── */
     --success:   #2dd98e;
@@ -75,9 +75,9 @@ body.light {
     --gold-shadow: 0 4px 20px rgba(160,114,40,0.14);
 
     /* Warm dark text */
-    --text:      #28200e;
-    --text2:     #5a4828;
-    --muted:     #9e8a68;
+    --text:      #1a1408;
+    --text2:     #3d2e14;
+    --muted:     #5c4828;
 
     /* Status */
     --success:   #1e8a58;
