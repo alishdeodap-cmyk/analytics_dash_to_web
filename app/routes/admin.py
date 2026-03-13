@@ -335,6 +335,63 @@ def users():
     return render_template('admin/users.html', users=all_users)
 
 
+@admin.route('/users/<int:user_id>/access', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def user_access(user_id):
+    user_obj        = User.query.get_or_404(user_id)
+    all_departments = Department.query.filter_by(is_active=True).order_by(Department.name).all()
+    all_dashboards  = Dashboard.query.filter_by(is_active=True).order_by(Dashboard.name).all()
+
+    if request.method == 'POST':
+        action = request.form.get('action')
+
+        if action == 'departments':
+            dept_ids = request.form.getlist('department_ids')
+            user_obj.departments = []
+            for dept_id in dept_ids:
+                dept = Department.query.get(int(dept_id))
+                if dept:
+                    user_obj.departments.append(dept)
+            db.session.commit()
+            flash(f"Departments updated for '{user_obj.username}'.", 'success')
+
+        elif action == 'dashboards':
+            dash_ids = request.form.getlist('dashboard_ids')
+            try:
+                user_obj.allowed_dashboards = []
+                for dash_id in dash_ids:
+                    dash = Dashboard.query.get(int(dash_id))
+                    if dash:
+                        user_obj.allowed_dashboards.append(dash)
+                db.session.commit()
+                flash(f"Dashboard access updated for '{user_obj.username}'.", 'success')
+            except Exception:
+                db.session.rollback()
+                flash('Run migration 002 first to enable direct dashboard assignment.', 'error')
+
+        return redirect(url_for('admin.user_access', user_id=user_id))
+
+    # Which dashboards are accessible via department (read-only info)
+    dept_dash_ids = set()
+    for dept in user_obj.departments:
+        for dash in dept.dashboards:
+            dept_dash_ids.add(dash.id)
+
+    # Which dashboards are directly assigned
+    try:
+        direct_dash_ids = set(d.id for d in user_obj.allowed_dashboards)
+    except Exception:
+        direct_dash_ids = set()
+
+    return render_template('admin/user_access.html',
+                           user_obj=user_obj,
+                           all_departments=all_departments,
+                           all_dashboards=all_dashboards,
+                           dept_dash_ids=dept_dash_ids,
+                           direct_dash_ids=direct_dash_ids)
+
+
 @admin.route('/users/new', methods=['GET', 'POST'])
 @login_required
 @admin_required

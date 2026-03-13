@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block title %}Access — {{ user_obj.username }} — Deodap Analytics{% endblock %}
+{% block page_title %}Manage Access{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+            <div class="user-avatar" style="width:38px;height:38px;font-size:15px;">{{ user_obj.username[0].upper() }}</div>
+            <div>
+                <h1 style="margin:0;">{{ user_obj.username }}</h1>
+                <div style="font-size:12px;color:var(--muted);margin-top:2px;">{{ user_obj.email or 'No email' }} &middot; {{ user_obj.role }}</div>
+            </div>
+        </div>
+    </div>
+    <a href="{{ url_for('admin.users') }}" class="btn btn-secondary">← Back to Users</a>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+
+    <!-- ── DEPARTMENT ASSIGNMENT ── -->
+    <div class="card">
+        <div class="card-title">
+            <span>
+                <svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px;vertical-align:-3px;margin-right:6px;color:var(--gold);"><path d="M17 11V3H7v4H3v14h8v-4h2v4h8V11h-4zM7 19H5v-2h2v2zm0-4H5v-2h2v2zm0-4H5v-2h2v2zm4 4H9v-2h2v2zm0-4H9v-2h2v2zm0-4H9V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2z"/></svg>
+                Departments
+            </span>
+            <span style="font-size:11px;font-weight:400;color:var(--muted);">{{ user_obj.departments|length }} assigned</span>
+        </div>
+
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.6;">
+            Move this user between departments. They'll inherit dashboard access from all assigned departments.
+        </p>
+
+        <form method="POST">
+            <input type="hidden" name="action" value="departments">
+
+            {% if all_departments %}
+            <div class="checkbox-group" style="max-height:280px;">
+                {% for dept in all_departments %}
+                <label class="checkbox-item">
+                    <input type="checkbox" name="department_ids" value="{{ dept.id }}"
+                        {% if dept in user_obj.departments %}checked{% endif %}>
+                    <span>
+                        {{ dept.name }}
+                        {% if dept.parent %}
+                        <span style="font-size:11px;color:var(--muted);"> ↳ {{ dept.parent.name }}</span>
+                        {% endif %}
+                    </span>
+                </label>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div style="color:var(--muted);font-size:13px;padding:16px;text-align:center;">
+                No departments exist yet. <a href="{{ url_for('admin.department_new') }}" style="color:var(--gold);">Create one →</a>
+            </div>
+            {% endif %}
+
+            <div style="margin-top:14px;">
+                <button type="submit" class="btn btn-primary btn-sm">Save Departments</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ── DASHBOARD DIRECT ACCESS ── -->
+    <div class="card">
+        <div class="card-title">
+            <span>
+                <svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px;vertical-align:-3px;margin-right:6px;color:var(--gold);"><path d="M3 3h7v7H3V3zm0 11h7v7H3v-7zm11-11h7v7h-7V3zm0 11h7v7h-7v-7z"/></svg>
+                Dashboard Access
+            </span>
+            <span style="font-size:11px;font-weight:400;color:var(--muted);">{{ direct_dash_ids|length }} direct grants</span>
+        </div>
+
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:4px;line-height:1.6;">
+            Grant or revoke specific dashboards for this user directly, regardless of their department.
+        </p>
+
+        <!-- Legend -->
+        <div style="display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap;">
+            <span style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;">
+                <span style="width:8px;height:8px;border-radius:50%;background:var(--gold);display:inline-block;"></span>
+                Direct grant (this form)
+            </span>
+            <span style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;">
+                <span style="width:8px;height:8px;border-radius:50%;background:var(--success);display:inline-block;"></span>
+                Via department (automatic)
+            </span>
+        </div>
+
+        <form method="POST">
+            <input type="hidden" name="action" value="dashboards">
+
+            {% if all_dashboards %}
+            <div class="checkbox-group" style="max-height:280px;">
+                {% for dash in all_dashboards %}
+                <label class="checkbox-item" style="position:relative;">
+                    <input type="checkbox" name="dashboard_ids" value="{{ dash.id }}"
+                        {% if dash.id in direct_dash_ids %}checked{% endif %}>
+                    <span style="flex:1;">
+                        {{ dash.name }}
+                        {% if dash.id in dept_dash_ids %}
+                        <span style="font-size:10px;padding:1px 6px;background:rgba(30,138,88,0.12);color:var(--success);border-radius:10px;margin-left:4px;font-weight:600;">dept</span>
+                        {% endif %}
+                    </span>
+                </label>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div style="color:var(--muted);font-size:13px;padding:16px;text-align:center;">
+                No active dashboards. <a href="{{ url_for('admin.dashboard_new') }}" style="color:var(--gold);">Add one →</a>
+            </div>
+            {% endif %}
+
+            <div style="margin-top:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <button type="submit" class="btn btn-primary btn-sm">Save Dashboard Access</button>
+                <span style="font-size:12px;color:var(--muted);">Checked = direct access granted</span>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<!-- ── CURRENT ACCESS SUMMARY ── -->
+<div class="card" style="margin-top:20px;">
+    <div class="card-title">Current Access Summary</div>
+    {% set combined = [] %}
+    {% for dept in user_obj.departments %}
+        {% for dash in dept.dashboards %}
+            {% if dash.is_active and dash not in combined %}
+                {% set _ = combined.append(dash) %}
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+    {% for dash in all_dashboards %}
+        {% if dash.id in direct_dash_ids and dash not in combined %}
+            {% set _ = combined.append(dash) %}
+        {% endif %}
+    {% endfor %}
+
+    {% if combined %}
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">
+        <strong style="color:var(--text);">{{ user_obj.username }}</strong> currently has access to
+        <strong style="color:var(--gold);">{{ combined|length }}</strong> dashboard{{ 's' if combined|length != 1 else '' }}:
+    </p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        {% for dash in combined %}
+        <span class="tag" style="font-size:12px;padding:5px 12px;">
+            {{ dash.name }}
+            {% if dash.id in direct_dash_ids and dash.id in dept_dash_ids %}
+            <span style="font-size:10px;opacity:0.7;"> (direct + dept)</span>
+            {% elif dash.id in direct_dash_ids %}
+            <span style="font-size:10px;opacity:0.7;"> (direct)</span>
+            {% else %}
+            <span style="font-size:10px;opacity:0.7;"> (dept)</span>
+            {% endif %}
+        </span>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="color:var(--muted);font-size:13px;padding:8px 0;">
+        No dashboards accessible yet — assign a department or grant direct access above.
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

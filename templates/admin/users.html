@@ -71,6 +71,12 @@
                         <a href="{{ url_for('admin.user_edit', user_id=user.id) }}"
                            class="btn btn-secondary btn-xs">Edit</a>
 
+                        <a href="{{ url_for('admin.user_access', user_id=user.id) }}"
+                           class="btn btn-xs" style="background:var(--gold-dim);border:1px solid rgba(160,114,40,0.25);color:var(--gold);">
+                            <svg viewBox="0 0 24 24" fill="currentColor" style="width:11px;height:11px"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                            Access
+                        </a>
+
                         <!-- Reset password inline form -->
                         <button type="button" class="btn btn-secondary btn-xs"
                                 onclick="document.getElementById('reset-{{ user.id }}').style.display='block'; this.style.display='none'">
