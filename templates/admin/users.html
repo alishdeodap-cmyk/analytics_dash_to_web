@@ -84,6 +84,13 @@
                                 {{ 'Deactivate' if user.is_active else 'Activate' }}
                             </button>
                         </form>
+                        <form method="POST" action="{{ url_for('admin.user_delete', user_id=user.id) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-xs"
+                                    data-confirm="Permanently delete user '{{ user.username }}'? This cannot be undone.">
+                                <svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                Delete
+                            </button>
+                        </form>
                         {% endif %}
                     </div>
 

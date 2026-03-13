@@ -435,3 +435,18 @@ def user_toggle(user_id):
         status = 'activated' if user_obj.is_active else 'deactivated'
         flash(f"User '{user_obj.username}' {status}.", 'success')
     return redirect(url_for('admin.users'))
+
+
+@admin.route('/users/<int:user_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def user_delete(user_id):
+    user_obj = User.query.get_or_404(user_id)
+    if user_obj.id == current_user.id:
+        flash('You cannot delete your own account.', 'error')
+        return redirect(url_for('admin.users'))
+    username = user_obj.username
+    db.session.delete(user_obj)
+    db.session.commit()
+    flash(f"User '{username}' permanently deleted.", 'success')
+    return redirect(url_for('admin.users'))
