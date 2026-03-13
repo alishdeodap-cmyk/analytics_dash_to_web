@@ -9,7 +9,7 @@ function setTheme(theme) {
 }
 // Apply saved theme immediately (default: dark)
 (function () {
-    const saved = localStorage.getItem('ah-theme') || 'dark';
+    const saved = localStorage.getItem('ah-theme') || 'light';
     setTheme(saved);
 })();
 

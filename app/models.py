@@ -56,18 +56,35 @@ class User(UserMixin, db.Model):
         return self.role == 'admin'
 
     def get_accessible_dashboards(self):
-        """Return all active dashboards this user is directly assigned to."""
+        """Return active dashboards this user can view.
+        Checks BOTH: direct user assignment (user_dashboards)
+        AND department-level assignment (department_dashboards).
+        """
         if self.is_admin:
             return Dashboard.query.filter_by(is_active=True).all()
-        return (
-            Dashboard.query
-            .join(user_dashboards, Dashboard.id == user_dashboards.c.dashboard_id)
-            .filter(
-                user_dashboards.c.user_id == self.id,
-                Dashboard.is_active == True
-            )
-            .all()
-        )
+
+        ids = set()
+
+        # Method 1: dashboards assigned directly to this user
+        try:
+            for dash in self.allowed_dashboards:
+                if dash.is_active:
+                    ids.add(dash.id)
+        except Exception:
+            pass  # user_dashboards table may not exist yet (run migration 002)
+
+        # Method 2: dashboards assigned to the user's departments
+        for dept in self.departments:
+            for dash in dept.dashboards:
+                if dash.is_active:
+                    ids.add(dash.id)
+
+        if not ids:
+            return []
+        return Dashboard.query.filter(
+            Dashboard.id.in_(ids),
+            Dashboard.is_active == True
+        ).all()
 
     def can_access_dashboard(self, dashboard_id):
         """Check if user has permission to view a specific dashboard."""
