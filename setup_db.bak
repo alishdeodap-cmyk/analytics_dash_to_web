@@ -1,7 +1,7 @@
 -- Run this in MySQL to set up your database
  
-CREATE DATABASE IF NOT EXISTS justshop24;
-USE justshop24;
+CREATE DATABASE IF NOT EXISTS analytics_db;
+USE analytics_db;
  
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -11,6 +11,6 @@ CREATE TABLE IF NOT EXISTS users (
 );
  
 -- Create a dedicated MySQL user for the app
-CREATE USER IF NOT EXISTS 'justshop24_user'@'localhost' IDENTIFIED BY 'YOUR_DB_PASSWORD';
-GRANT ALL PRIVILEGES ON justshop24.* TO 'justshop24_user'@'localhost';
+CREATE USER IF NOT EXISTS 'analytics_user'@'localhost' IDENTIFIED BY 'YOUR_DB_PASSWORD';
+GRANT ALL PRIVILEGES ON analytics_db.* TO 'analytics_user'@'localhost';
 FLUSH PRIVILEGES;

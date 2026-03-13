@@ -1,5 +1,5 @@
 # ============================================================
-#  FILE 1: /etc/nginx/sites-available/justshop24
+#  FILE 1: /etc/nginx/sites-available/analytics_app
 #  Nginx config — copy this to your server
 # ============================================================
 
@@ -30,18 +30,18 @@ server {
 
 
 # ============================================================
-#  FILE 2: /etc/systemd/system/justshop24.service
+#  FILE 2: /etc/systemd/system/analytics_app.service
 #  Keeps your Flask app running in background
 # ============================================================
 
 [Unit]
-Description=JustShop24 Flask App
+Description=Analytics App
 After=network.target
 
 [Service]
 User=ubuntu
-WorkingDirectory=/var/www/justshop24
-ExecStart=/var/www/justshop24/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:5000 app:app
+WorkingDirectory=/var/www/analytics_app
+ExecStart=/var/www/analytics_app/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:5000 app:app
 Restart=always
 
 [Install]
