@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Deodap Analytics{% endblock %}</title>
+    <title>{% block title %}DeoDap Analytics{% endblock %}</title>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/favicon.svg') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
@@ -18,7 +18,7 @@
             <!-- src is swapped by setTheme() in app.js on load -->
             <img id="sidebarLogo"
                  src="{{ url_for('static', filename='img/logo-light.svg') }}"
-                 alt="Deodap Analytics"
+                 alt="DeoDap Analytics"
                  style="height:48px;width:auto;max-width:190px;display:block;">
             <div class="brand-sub" style="margin-top:6px;">{% if current_user.is_admin %}Admin Panel{% else %}Analytics Portal{% endif %}</div>
         </div>
