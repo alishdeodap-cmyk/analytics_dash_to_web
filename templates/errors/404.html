@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 — Not Found</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root { --bg: #0a0a0f; --surface: #13131a; --border: #1e1e2e; --accent: #ff5f1f; --text: #f0f0f5; --muted: #6b6b80; }
+        body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .container { text-align: center; padding: 40px; }
+        .code { font-family: 'Syne', sans-serif; font-size: 96px; font-weight: 800; color: var(--accent); opacity: 0.15; line-height: 1; }
+        .title { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; margin-top: -20px; margin-bottom: 12px; }
+        .desc { color: var(--muted); font-size: 15px; margin-bottom: 28px; }
+        .btn { display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, var(--accent), #ff8c42); color: white; border-radius: 9px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; text-decoration: none; }
+        .btn:hover { opacity: 0.88; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="code">404</div>
+        <div class="title">Page Not Found</div>
+        <p class="desc">The page you're looking for doesn't exist.</p>
+        <a href="javascript:history.back()" class="btn">← Go Back</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}Settings — Analytics Hub{% endblock %}
+{% block page_title %}Settings{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Settings</h1>
+        <p>Manage your profile and preferences</p>
+    </div>
+</div>
+
+{% if error %}
+<div class="alert alert-error">⚠ {{ error }}</div>
+{% endif %}
+{% if success %}
+<div class="alert alert-success">✓ {{ success }}</div>
+{% endif %}
+
+<div class="settings-grid">
+
+    <!-- Left nav -->
+    <div class="settings-nav">
+        <div class="settings-nav-item active" data-panel="panel-profile">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            Profile
+        </div>
+        <div class="settings-nav-item" data-panel="panel-security">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+            Security
+        </div>
+        {% if current_user.is_admin %}
+        <div class="nav-divider"></div>
+        <a href="{{ url_for('admin.dashboard_new') }}" class="settings-nav-item" style="color:var(--accent);">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+            Add Dashboard
+        </a>
+        <a href="{{ url_for('admin.users') }}" class="settings-nav-item">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            Manage Users
+        </a>
+        {% endif %}
+        <div class="nav-divider"></div>
+        <a href="{{ url_for('auth.logout') }}" class="settings-nav-item" style="color:var(--danger);">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+            Logout
+        </a>
+    </div>
+
+    <!-- Panels -->
+    <div>
+        <!-- Profile Panel -->
+        <div class="settings-panel active" id="panel-profile">
+            <div class="card">
+                <div class="card-title">Profile Information</div>
+                <form method="POST">
+                    <input type="hidden" name="action" value="profile">
+                    <div class="form-grid" style="gap:16px;">
+                        <div class="form-group">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" value="{{ current_user.username }}" disabled>
+                            <span class="form-text">Username cannot be changed.</span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" name="email" class="form-control"
+                                   value="{{ current_user.email or '' }}"
+                                   placeholder="your@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Role</label>
+                            <input type="text" class="form-control" value="{{ current_user.role.title() }}" disabled>
+                        </div>
+                        {% if current_user.departments %}
+                        <div class="form-group">
+                            <label class="form-label">Departments</label>
+                            <div style="display:flex;gap:6px;flex-wrap:wrap;padding-top:4px;">
+                                {% for dept in current_user.departments %}
+                                <span class="tag">{{ dept.name }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div style="margin-top:20px;">
+                        <button type="submit" class="btn btn-primary">Save Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Security Panel -->
+        <div class="settings-panel" id="panel-security">
+            <div class="card">
+                <div class="card-title">Change Password</div>
+                <form method="POST">
+                    <input type="hidden" name="action" value="password">
+                    <div class="form-grid" style="gap:16px;">
+                        <div class="form-group">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" name="current_password" class="form-control"
+                                   placeholder="Enter current password" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">New Password</label>
+                            <input type="password" name="new_password" class="form-control"
+                                   placeholder="At least 8 characters" required minlength="8">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" name="confirm_password" class="form-control"
+                                   placeholder="Repeat new password" required>
+                        </div>
+                    </div>
+                    <div style="margin-top:20px;">
+                        <button type="submit" class="btn btn-primary">Update Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Show panel based on hash or error context
+{% if error and 'password' in (error or '') %}
+document.querySelector('[data-panel="panel-security"]').click();
+{% endif %}
+</script>
+{% endblock %}

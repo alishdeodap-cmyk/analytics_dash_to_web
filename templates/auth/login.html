@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Analytics Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #0a0a0f; --surface: #13131a; --border: #1e1e2e;
+            --accent: #ff5f1f; --accent2: #ff8c42; --text: #f0f0f5; --muted: #6b6b80;
+        }
+        body {
+            background: var(--bg); color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; overflow: hidden;
+        }
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 20% 50%, rgba(255,95,31,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 20%, rgba(255,140,66,0.05) 0%, transparent 50%);
+            pointer-events: none; z-index: 0;
+        }
+        .grid-bg {
+            position: fixed; inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 60px 60px; z-index: 0;
+        }
+        .wrapper {
+            position: relative; z-index: 1;
+            animation: slideUp 0.55s cubic-bezier(0.16,1,0.3,1) forwards;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(28px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .brand { text-align: center; margin-bottom: 36px; }
+        .brand-logo { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; letter-spacing: -1px; }
+        .brand-logo span { color: var(--accent); }
+        .brand-sub { font-size: 12px; color: var(--muted); margin-top: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
+        .card {
+            width: 420px; background: var(--surface);
+            border: 1px solid var(--border); border-radius: 18px; padding: 36px;
+            position: relative; overflow: hidden;
+        }
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+        }
+        h2 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 5px; }
+        .subtitle { color: var(--muted); font-size: 13.5px; margin-bottom: 28px; }
+        .field { margin-bottom: 18px; }
+        label {
+            display: block; font-size: 11px; font-weight: 600; color: var(--muted);
+            margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.07em;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%; padding: 13px 15px;
+            background: var(--bg); border: 1px solid var(--border);
+            border-radius: 9px; color: var(--text);
+            font-family: 'DM Sans', sans-serif; font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+        }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,95,31,0.12); }
+        .error-msg {
+            background: rgba(255,60,60,0.1); border: 1px solid rgba(255,60,60,0.25);
+            color: #ff6b6b; padding: 11px 15px; border-radius: 9px;
+            font-size: 13.5px; margin-bottom: 18px; text-align: center;
+        }
+        .btn-login {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: white; border: none; border-radius: 9px;
+            font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
+            cursor: pointer; letter-spacing: 0.03em;
+            transition: opacity 0.2s, transform 0.15s; margin-top: 6px;
+        }
+        .btn-login:hover { opacity: 0.88; transform: translateY(-1px); }
+        .btn-login:active { transform: translateY(0); }
+        .footer-note { text-align: center; margin-top: 22px; font-size: 12px; color: var(--muted); }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <div class="wrapper">
+        <div class="brand">
+            <div class="brand-logo">Analytics <span>Hub</span></div>
+            <div class="brand-sub">Internal Analytics Portal</div>
+        </div>
+
+        <div class="card">
+            <h2>Welcome back</h2>
+            <p class="subtitle">Sign in to access your dashboards</p>
+
+            {% if error %}
+            <div class="error-msg">⚠ {{ error }}</div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('auth.login') }}">
+                <div class="field">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username"
+                           placeholder="Enter your username"
+                           required autocomplete="username">
+                </div>
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password"
+                           placeholder="Enter your password"
+                           required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-login">Sign In →</button>
+            </form>
+        </div>
+        <div class="footer-note">© 2025 Analytics Hub. Internal use only.</div>
+    </div>
+</body>
+</html>

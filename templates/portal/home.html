@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Home — Analytics Hub{% endblock %}
+{% block page_title %}Home{% endblock %}
+
+{% block content %}
+<!-- Welcome banner -->
+<div style="margin-bottom:28px;">
+    <h1 style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;">
+        Welcome back, {{ current_user.username }} 👋
+    </h1>
+    <p class="text-muted" style="margin-top:5px;font-size:14px;">
+        Here's a quick overview of your dashboards.
+    </p>
+</div>
+
+<!-- Recently Viewed -->
+<div class="section-title">Recently Viewed</div>
+
+{% if recent_dashboards %}
+<div class="dashboard-grid" style="margin-bottom:32px;">
+    {% for dash in recent_dashboards %}
+    <div class="dashboard-card" data-url="{{ url_for('portal.view_dashboard', dashboard_id=dash.id) }}">
+        <div class="dashboard-card-name">{{ dash.name }}</div>
+        {% if dash.description %}
+        <div class="dashboard-card-desc">{{ dash.description }}</div>
+        {% else %}
+        <div class="dashboard-card-desc text-muted">No description</div>
+        {% endif %}
+        <div class="dashboard-card-footer">
+            <div class="dashboard-card-tags">
+                {% for dept in dash.departments[:2] %}
+                <span class="tag">{{ dept.name }}</span>
+                {% endfor %}
+            </div>
+            <span style="font-size:12px;color:var(--muted);">Open →</span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px;text-align:center;margin-bottom:32px;color:var(--muted);font-size:13.5px;">
+    No recent dashboards yet. Open a dashboard to see it here.
+</div>
+{% endif %}
+
+<!-- All Available Dashboards -->
+<div class="section-title">Available Dashboards</div>
+
+{% if allowed_dashboards %}
+<div class="dashboard-grid">
+    {% for dash in allowed_dashboards %}
+    <div class="dashboard-card" data-url="{{ url_for('portal.view_dashboard', dashboard_id=dash.id) }}">
+        <div class="dashboard-card-name">{{ dash.name }}</div>
+        {% if dash.description %}
+        <div class="dashboard-card-desc">{{ dash.description }}</div>
+        {% else %}
+        <div class="dashboard-card-desc text-muted">No description</div>
+        {% endif %}
+        <div class="dashboard-card-footer">
+            <div class="dashboard-card-tags">
+                {% for dept in dash.departments[:2] %}
+                <span class="tag">{{ dept.name }}</span>
+                {% endfor %}
+            </div>
+            <span style="font-size:12px;color:var(--muted);">Open →</span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h7v7H3V3zm0 11h7v7H3v-7zm11-11h7v7h-7V3zm0 11h7v7h-7v-7z"/></svg>
+    <p>No dashboards available</p>
+    <small>Ask your admin to assign dashboards to your department.</small>
+</div>
+{% endif %}
+{% endblock %}

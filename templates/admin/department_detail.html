@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}{{ dept.name }} — Analytics Hub{% endblock %}
+{% block page_title %}{{ dept.name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>{{ dept.name }}</h1>
+        <p>
+            {% if dept.parent %}Sub-department of {{ dept.parent.name }} · {% endif %}
+            {{ dept.users|length }} user{{ 's' if dept.users|length != 1 else '' }} ·
+            {{ dept.dashboards|length }} dashboard{{ 's' if dept.dashboards|length != 1 else '' }}
+        </p>
+    </div>
+    <div style="display:flex;gap:8px;">
+        <a href="{{ url_for('admin.department_edit', dept_id=dept.id) }}" class="btn btn-secondary">Edit</a>
+        <a href="{{ url_for('admin.departments') }}" class="btn btn-secondary">← Departments</a>
+    </div>
+</div>
+
+<div class="detail-grid">
+
+    <!-- Users column -->
+    <div class="card">
+        <div class="card-title">
+            <span>Users ({{ dept.users|length }})</span>
+        </div>
+
+        <!-- Add user form -->
+        <form method="POST" action="{{ url_for('admin.department_add_user', dept_id=dept.id) }}"
+              style="display:flex;gap:8px;margin-bottom:16px;">
+            <select name="user_id" class="form-control" required style="flex:1;">
+                <option value="" disabled selected>Select a user to add…</option>
+                {% for user in all_users %}
+                {% if user not in dept.users %}
+                <option value="{{ user.id }}">{{ user.username }} ({{ user.role }})</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary btn-sm">Add</button>
+        </form>
+
+        {% if dept.users %}
+        <div class="member-list">
+            {% for user in dept.users %}
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="member-avatar">{{ user.username[0].upper() }}</div>
+                    <div>
+                        <div style="font-size:13px;font-weight:600;">{{ user.username }}</div>
+                        <div style="font-size:11px;color:var(--muted);">
+                            {{ user.email or 'No email' }} ·
+                            <span class="badge {% if user.role == 'admin' %}badge-admin{% else %}badge-accent{% endif %}" style="font-size:10px;">{{ user.role }}</span>
+                        </div>
+                    </div>
+                </div>
+                <form method="POST" action="{{ url_for('admin.department_remove_user', dept_id=dept.id, user_id=user.id) }}">
+                    <button type="submit" class="btn btn-danger btn-xs"
+                            data-confirm="Remove {{ user.username }} from {{ dept.name }}?">✕</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="color:var(--muted);font-size:13px;padding:12px 0;text-align:center;">
+            No users in this department yet.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Dashboards column -->
+    <div class="card">
+        <div class="card-title">
+            <span>Dashboards ({{ dept.dashboards|length }})</span>
+        </div>
+
+        <!-- Assign dashboard form -->
+        <form method="POST" action="{{ url_for('admin.department_add_dashboard', dept_id=dept.id) }}"
+              style="display:flex;gap:8px;margin-bottom:16px;">
+            <select name="dashboard_id" class="form-control" required style="flex:1;">
+                <option value="" disabled selected>Select a dashboard to assign…</option>
+                {% for dash in all_dashboards %}
+                {% if dash not in dept.dashboards %}
+                <option value="{{ dash.id }}">{{ dash.name }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary btn-sm">Assign</button>
+        </form>
+
+        {% if dept.dashboards %}
+        <div class="member-list">
+            {% for dash in dept.dashboards %}
+            <div class="member-row">
+                <div class="member-info">
+                    <div style="width:28px;height:28px;background:rgba(255,95,31,0.12);border:1px solid rgba(255,95,31,0.2);border-radius:6px;display:flex;align-items:center;justify-content:center;">
+                        <svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;color:var(--accent)"><path d="M3 3h7v7H3V3zm0 11h7v7H3v-7zm11-11h7v7h-7V3zm0 11h7v7h-7v-7z"/></svg>
+                    </div>
+                    <div>
+                        <div style="font-size:13px;font-weight:600;">{{ dash.name }}</div>
+                        <span class="badge {% if dash.is_active %}badge-success{% else %}badge-danger{% endif %}" style="font-size:10px;">
+                            {{ 'Active' if dash.is_active else 'Inactive' }}
+                        </span>
+                    </div>
+                </div>
+                <form method="POST" action="{{ url_for('admin.department_remove_dashboard', dept_id=dept.id, dashboard_id=dash.id) }}">
+                    <button type="submit" class="btn btn-danger btn-xs"
+                            data-confirm="Remove '{{ dash.name }}' from {{ dept.name }}?">✕</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="color:var(--muted);font-size:13px;padding:12px 0;text-align:center;">
+            No dashboards assigned yet.
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- Sub-departments -->
+{% if dept.children %}
+<div class="card" style="margin-top:20px;">
+    <div class="card-title">Sub-departments ({{ dept.children|length }})</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        {% for child in dept.children %}
+        <a href="{{ url_for('admin.department_detail', dept_id=child.id) }}"
+           style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;transition:border-color 0.18s;">
+            {{ child.name }}
+            <span class="badge badge-accent">{{ child.users|length }} users</span>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

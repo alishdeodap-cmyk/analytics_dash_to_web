@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% set is_edit = user_obj is not none %}
+{% block title %}{{ 'Edit' if is_edit else 'New' }} User — Analytics Hub{% endblock %}
+{% block page_title %}{{ 'Edit' if is_edit else 'New' }} User{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>{{ 'Edit User: ' + user_obj.username if is_edit else 'Create New User' }}</h1>
+        <p>{{ 'Update user information and permissions' if is_edit else 'New users will be prompted to change their password on first login' }}</p>
+    </div>
+    <a href="{{ url_for('admin.users') }}" class="btn btn-secondary">← Back to Users</a>
+</div>
+
+{% if error %}
+<div class="alert alert-error">⚠ {{ error }}</div>
+{% endif %}
+
+<form method="POST" style="max-width:620px;">
+    <div class="card" style="margin-bottom:20px;">
+        <div class="card-title">Account Details</div>
+        <div class="form-grid" style="gap:18px;">
+            <div class="form-group">
+                <label class="form-label">Username {% if not is_edit %}*{% endif %}</label>
+                <input type="text" name="username" class="form-control"
+                       value="{{ user_obj.username if is_edit else '' }}"
+                       placeholder="e.g. john_doe"
+                       {% if is_edit %}disabled{% else %}required{% endif %}>
+                {% if is_edit %}
+                <span class="form-text">Username cannot be changed after creation.</span>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" class="form-control"
+                       value="{{ user_obj.email if is_edit and user_obj.email else '' }}"
+                       placeholder="user@company.com">
+            </div>
+            {% if not is_edit %}
+            <div class="form-group">
+                <label class="form-label">Temporary Password *</label>
+                <input type="password" name="password" class="form-control"
+                       placeholder="Min 6 characters" required minlength="6">
+                <span class="form-text">
+                    The user will be forced to change this on their first login.
+                </span>
+            </div>
+            {% endif %}
+            <div class="form-group">
+                <label class="form-label">Role</label>
+                <select name="role" class="form-control">
+                    <option value="user"  {% if not is_edit or user_obj.role == 'user'  %}selected{% endif %}>User (normal access)</option>
+                    <option value="admin" {% if is_edit and user_obj.role == 'admin' %}selected{% endif %}>Admin (full access)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+        <div class="card-title">Department Assignments</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">
+            Select which departments this user belongs to. Their dashboard access will be determined by these departments.
+        </p>
+        {% if departments %}
+        <div class="checkbox-group">
+            {% for dept in departments %}
+            <label class="checkbox-item">
+                <input type="checkbox" name="department_ids" value="{{ dept.id }}"
+                    {% if is_edit and dept in user_obj.departments %}checked{% endif %}>
+                <span>
+                    {{ dept.name }}
+                    {% if dept.parent %}
+                    <span style="font-size:11px;color:var(--muted);"> ({{ dept.parent.name }})</span>
+                    {% endif %}
+                </span>
+            </label>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="color:var(--muted);font-size:13px;padding:12px;background:var(--bg);border-radius:8px;">
+            No departments yet.
+            <a href="{{ url_for('admin.department_new') }}" style="color:var(--accent);">Create a department first →</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <div style="display:flex;gap:10px;">
+        <button type="submit" class="btn btn-primary">
+            {{ 'Save Changes' if is_edit else 'Create User' }}
+        </button>
+        <a href="{{ url_for('admin.users') }}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}

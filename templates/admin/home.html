@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Admin Home — Analytics Hub{% endblock %}
+{% block page_title %}Admin Home{% endblock %}
+
+{% block content %}
+<div style="margin-bottom:24px;">
+    <h1 style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;">
+        Dashboard Overview
+    </h1>
+    <p class="text-muted" style="margin-top:5px;font-size:14px;">
+        System status and recent activity at a glance.
+    </p>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.users }}</div>
+        <div class="stat-label">Active Users</div>
+        <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.departments }}</div>
+        <div class="stat-label">Departments</div>
+        <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 11V3H7v4H3v14h8v-4h2v4h8V11h-4z"/></svg>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.dashboards }}</div>
+        <div class="stat-label">Active Dashboards</div>
+        <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h7v7H3V3zm0 11h7v7H3v-7zm11-11h7v7h-7V3zm0 11h7v7h-7v-7z"/></svg>
+        </div>
+    </div>
+</div>
+
+<!-- Quick actions -->
+<div style="display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap;">
+    <a href="{{ url_for('admin.dashboard_new') }}" class="btn btn-primary">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+        Add Dashboard
+    </a>
+    <a href="{{ url_for('admin.user_new') }}" class="btn btn-secondary">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        New User
+    </a>
+    <a href="{{ url_for('admin.department_new') }}" class="btn btn-secondary">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+        New Department
+    </a>
+</div>
+
+<!-- Two column layout -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+
+    <!-- Recent Dashboard Views -->
+    <div class="card">
+        <div class="card-title">Recent Activity</div>
+        {% if recent_views %}
+        <div style="display:flex;flex-direction:column;gap:8px;">
+            {% for view in recent_views %}
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px;border-radius:6px;background:var(--surface2);">
+                <div>
+                    <div style="font-size:13px;font-weight:600;">
+                        {{ view.dashboard.name if view.dashboard else 'Deleted' }}
+                    </div>
+                    <div style="font-size:11.5px;color:var(--muted);">
+                        by {{ view.user.username if view.user else '—' }}
+                    </div>
+                </div>
+                <div style="font-size:11px;color:var(--muted);">
+                    {{ view.last_viewed.strftime('%b %d, %H:%M') }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-muted text-sm" style="padding:12px 0;">No activity yet.</div>
+        {% endif %}
+    </div>
+
+    <!-- Recent Logins -->
+    <div class="card">
+        <div class="card-title">Recent Logins</div>
+        {% if recent_logins %}
+        <div style="display:flex;flex-direction:column;gap:8px;">
+            {% for log in recent_logins %}
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px;border-radius:6px;background:var(--surface2);">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span class="badge {% if log.status == 'success' %}badge-success{% else %}badge-danger{% endif %}">
+                        {{ log.status }}
+                    </span>
+                    <span style="font-size:13px;">{{ log.username }}</span>
+                </div>
+                <div style="font-size:11px;color:var(--muted);">
+                    {{ log.logged_at.strftime('%b %d, %H:%M') }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-muted text-sm" style="padding:12px 0;">No login records yet.</div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

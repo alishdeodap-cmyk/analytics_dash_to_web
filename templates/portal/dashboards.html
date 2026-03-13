@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Dashboards — Analytics Hub{% endblock %}
+{% block page_title %}Dashboards{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Dashboards</h1>
+        <p>All dashboards available to you</p>
+    </div>
+    <!-- Search -->
+    <form method="GET" action="{{ url_for('portal.dashboards') }}">
+        <div class="search-bar">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" name="q" value="{{ q }}" placeholder="Search dashboards...">
+        </div>
+    </form>
+</div>
+
+{% if dashboards %}
+<div class="dashboard-grid">
+    {% for dash in dashboards %}
+    <div class="dashboard-card" data-url="{{ url_for('portal.view_dashboard', dashboard_id=dash.id) }}">
+        <div class="dashboard-card-name">{{ dash.name }}</div>
+        {% if dash.description %}
+        <div class="dashboard-card-desc">{{ dash.description }}</div>
+        {% else %}
+        <div class="dashboard-card-desc text-muted">No description provided</div>
+        {% endif %}
+        <div class="dashboard-card-footer">
+            <div class="dashboard-card-tags">
+                {% for dept in dash.departments[:3] %}
+                <span class="tag">{{ dept.name }}</span>
+                {% endfor %}
+                {% if dash.departments|length > 3 %}
+                <span class="tag">+{{ dash.departments|length - 3 }}</span>
+                {% endif %}
+            </div>
+        </div>
+        <a href="{{ url_for('portal.view_dashboard', dashboard_id=dash.id) }}"
+           class="btn btn-primary btn-sm" style="width:100%;justify-content:center;"
+           onclick="event.stopPropagation()">
+            Open Dashboard →
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% elif q %}
+<div class="empty-state">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+    <p>No dashboards found for "{{ q }}"</p>
+    <small><a href="{{ url_for('portal.dashboards') }}" style="color:var(--accent)">Clear search</a></small>
+</div>
+{% else %}
+<div class="empty-state">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h7v7H3V3zm0 11h7v7H3v-7zm11-11h7v7h-7V3zm0 11h7v7h-7v-7z"/></svg>
+    <p>No dashboards available</p>
+    <small>Ask your admin to assign dashboards to your department.</small>
+</div>
+{% endif %}
+{% endblock %}
