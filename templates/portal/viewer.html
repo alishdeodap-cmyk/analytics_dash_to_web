@@ -6,8 +6,18 @@
     <title>{{ dashboard.name }} — DeoDap Analytics</title>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <script>
+        // Apply saved theme before render to avoid flash
+        (function(){
+            const t = localStorage.getItem('ah-theme') || 'light';
+            if(t === 'light') document.documentElement.classList.add('light-pre');
+        })();
+    </script>
+    <style>
+        html.light-pre body, body.light { background: var(--bg) !important; }
+    </style>
 </head>
-<body style="margin:0;padding:0;overflow:hidden;background:#0a0a0f;">
+<body style="margin:0;padding:0;overflow:hidden;">
 <div class="viewer-shell">
 
     <!-- Top bar -->
@@ -19,7 +29,7 @@
         <div class="brand-logo" style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--gold);">
             DeoDap Analytics
         </div>
-        <div class="viewer-title">{{ dashboard.name }}</div>
+        <div class="viewer-title" style="color:var(--text);">{{ dashboard.name }}</div>
         {% if dashboard.departments %}
         <div style="display:flex;gap:6px;margin-left:auto;">
             {% for dept in dashboard.departments %}
@@ -44,5 +54,13 @@
         sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-downloads">
     </iframe>
 </div>
+<script>
+    // Apply saved theme
+    (function(){
+        const t = localStorage.getItem('ah-theme') || 'light';
+        document.body.classList.toggle('light', t === 'light');
+        document.documentElement.classList.remove('light-pre');
+    })();
+</script>
 </body>
 </html>

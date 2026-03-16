@@ -887,7 +887,7 @@ select.form-control { cursor: pointer; }
     box-shadow: var(--shadow-sm);
 }
 .viewer-bar .brand-logo { font-size: 16px; }
-.viewer-title { font-size: 13.5px; font-weight: 600; color: var(--muted); }
+.viewer-title { font-size: 13.5px; font-weight: 600; color: var(--text); }
 .viewer-iframe { flex: 1; border: none; display: block; }
 
 /* ── Department detail ── */
